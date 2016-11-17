@@ -1,0 +1,49 @@
+#!/usr/bin/lua
+local ubus = require "ubus"
+local jsonc = require("luci.jsonc")
+local cerator_utils = require "creator.utils"
+local creator_onboarding = require "creator.onboarding"
+local creator_ds = require "creator.ds"
+
+require "uloop"
+
+uloop.init()
+local conn = ubus.connect() if not conn then
+  error("Failed to connect to ubusd")
+end
+
+local generate_method = {
+  creator = {
+    doOnboarding = {
+      function(req, msg)
+        print("Starting certificate generation")
+        local ok, certOrError = pcall(creator_onboarding.doOnboarding, msg["ds_url"], msg["key"], msg["secret"])
+        if not ok then
+          conn:reply(req, {error_msg = tostring(certOrError.msg)})
+          return
+        end
+        conn:reply(req, {status = "Ok"})
+      end, {id = ubus.INT32, msg = ubus.STRING}
+    },
+    generatePsk = {
+      function(req, msg)
+        print("Starting PSK generation")
+        local data = cerator_utils.loadJsonFromFile("/etc/creator/provisioning.cfg")
+        if (data == nil) then
+          conn:reply(req, {error_msg = "Provisioning config not found!"});
+          return
+        end
+
+        local ok, pskOrError = pcall(creator_ds.generatePsk, data.url, data.key, data.secret)
+        if not ok then
+          conn:reply(req, {error_msg = err.msg})
+          return
+        end
+
+        conn:reply(req, {pskIdentity = pskOrError.Identity, pskSecret = pskOrError.Secret})
+      end, {id = ubus.INT32, msg = ubus.STRING}
+    },
+  }
+}
+conn:add(generate_method)
+uloop.run()

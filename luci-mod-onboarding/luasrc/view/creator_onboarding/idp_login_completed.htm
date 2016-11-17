@@ -1,0 +1,20 @@
+
+<%+creator_onboarding/creator_include%>
+<div class="bootstrap-isolation">
+<%+creator_onboarding/alert_modal%>
+<form>
+    <input type="hidden" name="token" id="token"/>
+</form>
+</div>
+<script>
+
+function getTokenFromHash(hash) {
+    var res = hash.split("=");
+    return res[1];
+}
+
+document.getElementById('token').value=getTokenFromHash(location.hash)
+document.forms[0].submit()
+
+complete(getTokenFromHash(location.hash));
+</script>

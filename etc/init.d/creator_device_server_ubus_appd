@@ -1,0 +1,15 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+
+SERVICE_PID_FILE=/var/run/imgtec_ubus.pid
+BINARY=/usr/bin/creator_device_server_ubus_appd
+
+start() {
+	start-stop-daemon -m -S -p $SERVICE_PID_FILE -b -x $BINARY
+}
+
+stop() {
+	start-stop-daemon -K -p $SERVICE_PID_FILE -s 15
+	rm -f $SERVICE_PID_FILE
+}

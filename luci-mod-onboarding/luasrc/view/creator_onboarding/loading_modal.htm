@@ -1,0 +1,32 @@
+<div class="modal" tabindex="-1" role="dialog" id="loading-modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <!--<div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Modal title</h4>
+    </div>-->
+      <div class="modal-body">
+        <div class="row">
+            <div class="col-lg-2" id="loading-modal-body">
+                <img src="/luci-static/resources/creator/gfx/cog-loader.gif" />
+            </div>
+            <div class="col-lg-10" id="loading-modal-message">
+                
+            </div>
+        </div>
+      </div>
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script>
+function showLoadingModal(message) {
+    $("#loading-modal-message").html(message);
+    $("#loading-modal").modal('show');
+}
+
+function hideLoadingModal() {
+    $("#loading-modal").modal('hide');
+}
+</script>
