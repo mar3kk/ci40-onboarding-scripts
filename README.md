@@ -1,98 +1,248 @@
-# How to use certificate/PSK generation scripts with ubus/rpc.
+![](http://static.creatordev.io/logo.png)
+# Ci40 Onboarding scripts
+
+Visit us at [forum.creatordev.io](http://forum.creatordev.io) for support and discussion
+
+
+This projects provides a bunch of scripts that allows you to do onboarding of
+Your Ci40 either through WEB interface or using [mobile app](https://github.com/CreatorDev/android-provisioning-onboard-app).
+Onboarding is a process of connecting your Ci40 to the Device Server.
+
+There are three main components:
+
+* **Luci onboarding module** that integrates with LuCI interface.
+* **JsonRPC API** that exposes couple of methods that can be used to perfrom onboarding.
+* **Ubus API** that exposes an **"Creator"** ubus object on which some methods can be performed.
 
 ## Prerequisites
 
-You must install following packages on CI40:
+Onboarding scripts depends on following packages:
+* curl
+* luci
+* luci-mod-rpc
+* libubox-lua
+* luci-ssl-openssl
+* uhttpd-mod-tls
+* avahi-dbus-daemon
+* avahi-dnsconfd
 
-	opkg install curl luci-mod-rpc libubox-lua
+If You're using Creator Image You should already have that installed, otherwise You can install them
+using following command:
 
+	opkg install curl luci-mod-rpc libubox-lua luci-ssl uhttpd-mod-tls avahi-dbus-daemon avahi-dnsconfd
 
-## Certificate/PSK generation via RPC
+## How to install
 
-`imgtec_generate` is main script to generate certificate or PSK.
-It has following parameters:
-1. 'cert' / 'psk'
-2. device server url
-3. key to device server
-4. secret to device server
+Easiest way of installing **Onboarding Scripts** is using an opkg package manager.
 
-It contacts device server to generate certificate/PSK, which is returned in two ways:
-via standard output (which is used through RPC) and send by ubus event.
+    opkg install onboarding-scripts
 
-IMPORTANT:
-Calling 'imgtec_generate' with 'cert' parameter will generate certificate ('cert.pem')
-and provisioning configuration ('provisioning.cfg') files and store on the
-file system (default location is '/root/' directory').
+Or You can compile it by yourself.
 
-## Using generation script through RPC
+## LuCI onboarding module
+It's a module to LuCI that allow to do onboarding of your Ci40 board through a web page.
+Onboarding module is available on your Luci page under tab "Creator". Once you've
+connected you're Ci40 to the internet You can access it through `https://<CI40_IP>/cgi-bin/luci` where
+**CI40_IP** is ip of your Ci40 board in a local network.
 
-On CI40 board there's [luci JSON-RPC mechanism](http://luci.subsignal.org/trac/wiki/Documentation/JsonRpcHowTo).
-First you have to authenticate on the CI40 by sending
+## Json RPC API
+This component exposes couple of Json RPC methods through https. Api is accessible through
+`https://<CI40_IP>/cgi-bin/luci/rpc/creator_onboarding?auth=AUTH_TOKEN` endpoint.
+Uhttpd deamon running on Ci40 uses self signed certificate. You may need to tell your client to
+accept such certificates. in curl this will be `-k` parameter.
 
-    curl -i -X POST -d '{"method": "login", "params": ["root", "password"]}' http://<YOUR_IP>/cgi-bin/luci/rpc/auth
+### Authentication
 
-This will return token.
+To call any method You need to be authenticated first. To authenticate yourself using JsonRPC call
 
-Then you just call
+    http://<CI40_IP>/cgi-bin/luci/rpc/auth
 
-    curl -i -X POST -d '{"method": "exec", "params": ["/root/imgtec_generate cert https://deviceserver.flowcloud.systems YOUR_KEY YOUR_SECRET"], "id": 111}' http://<YOUR_IP>/cgi-bin/luci/rpc/sys\?auth\=RETURNED_TOKEN    
+with following request body
 
-
-To receive PSK call
-
-    curl -i -X POST -d '{"method": "exec", "params": ["/root/imgtec_generate psk https://deviceserver.flowcloud.systems"], "id": 111}' http://<YOUR_IP>/cgi-bin/luci/rpc/sys\?auth\=RETURNED_TOKEN
-
-
-## Using generation script through ubus
-
-### Running ubus service
-
-To expose generation methods in ubus interface, run `imgtec_generate_ubus` script.
-Now you check if ubus service for cert/psk generation is up and running:
-
-    ubus -v list imgtec
-
-You should receive something like
-
-```
-'imgtec' @2137ca11
-	"generateCert":{"id":"Integer","msg":"String"}
-	"generatePsk":{"id":"Integer","msg":"String"}
+```json
+{
+    "id" : 1,
+    "jsonrpc" : 2.0,
+    "method" : "login",
+    "params" : [
+        "USERNAME", "PASSWORD"
+    ]
+}
 ```
 
-### Cert generation through ubus
+where USERNAME and PASSWORD are credentials to your board. When successfull this call should return
+an authentication token which You have to pass when calling other methods.
 
-Now you could generate certificate:
+On successfull login you should get response similar to following one
 
-	ubus call imgtec generateCert '{"ds_url": "https://deviceserver.flowcloud.systems", "key": "YOUR_KEY", "secret": "YOUR_SECRET}'
+```json
+{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "result": "13f749ec6789ae6032eda560139ccded"
+}
+```
 
-Response will be returned with a generated `certificate`.
-In case of an error json response is send in following format '{error_msg = "ERROR_CAUSE"}'.
 
-### PSK generation through ubus
+### doOnboarding
+Calling this method will connect Your Ci40 board to Device Server. You need to know
+Your api key, api secret and device server url in advance. These can be obtained from device server console.
 
-For PSK generation, you need key and secret to Device Server stored in `/root/provisioning.cfg` file in following json format:
+ENDPOINT_NAME define how Your device will be named on device server.
 
-    {"url"="DEVICE_SERVER_URL", "key": "YOUR_KEY", "secret": "YOUR_SECRET"}
+Return true on success, or error on failure
 
-Which means that you must go through 'generate cert' procedure first.
+#### Example request
 
-Then you could generate PSK:
+```json
+{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method" : "doOnboarding",
+  "params" : [
+    "http://deviceserver.flowcloud.systems",
+    "YOUR_API_KEY",
+    "YOUR_API_SECRET",
+    "ENDPOINT_NAME"
+  ]
+}
+```
 
-	ubus call imgtec generatePsk '{}'
+#### Example response
 
-In case of an error json response is send in following format '{error_msg = "ERROR_CAUSE"}'.
+```json
+{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "result" : true,
+  "error" : null
+}
+```
 
-### Starting ubus service as [daemon](https://wiki.openwrt.org/doc/techref/initscripts)
 
-Copy `imgtec_ubus` to `/etc/init.d/imgtec_ubus`.
+### isProvisioned
+Return true if this board is Provisioned, false otherwise
 
-In order to automatically start the init script on boot, it must be installed into `/etc/rc.d/`.
-Invoke the "enable" command to run the initscript on boot: `/etc/init.d/imgtec_ubus enable`.
+#### Example request
 
-All `imgtec_generate*` scripts should be present in `/root`.
+```json
+{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method" : "isProvisioned",
+  "params" : []
+}
+```
 
-1. `imgtec_generate_ubus`: listen for ubus call command
-2. `imgtec_generate`: called by `imgtec_generate_ubus` to generate certificate/psk
+#### Example response
 
-To start daemon manually, call `/etc/init.d/imgtec_ubus start`.
+```json
+{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "result" : true,
+  "error" : null
+}
+```
+
+### unProvision
+Disconnects Ci40 from device server and removes configurations set by onboarding method
+
+#### Example request
+
+```json
+{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method" : "unProvision",
+  "params" : []
+}
+```
+
+#### Example response
+
+```json
+{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "result" : true,
+  "error" : null
+}
+```
+
+### boardName
+Return board name set during onboarding process or null if board is not yet provisioned to device server.
+
+#### Example request
+
+```json
+{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method" : "boardName",
+  "params" : []
+}
+```
+
+#### Example response
+
+```json
+{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "result" : true,
+  "error" : null
+}
+```
+
+### boardInfo
+Return set of key : value pairs with some board details
+
+#### Example request
+
+```json
+{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method" : "boardInfo",
+  "params" : []
+}
+```
+
+#### Example response
+
+```json
+{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "result" : {
+    "hostname" : "OpenWrt"
+  },
+  "error" : null
+}
+```
+
+
+## Ubus API
+
+Last component of onboarding-scripts is a ubus object "creator" which for the time being exposes only
+one method.
+
+### generatePsk
+
+Once onboarding process is completed this method can be used to generate new PSK on device server.
+
+`ubus call creator generatePsk '{}'`
+
+#### Example response
+
+```json
+{
+	"pskIdentity": "zyi9HHC4H0C2k5ygYOWSFA",
+	"pskSecret": "1988D523D88F480B15A98EBE27E1141CA41F30FD74E52C96ABC75AEC2AA49938"
+}
+```
+
+## CONTRIBUTING
+
+If you have a contribution to make please follow the processes laid out in [contributor guide](CONTRIBUTING.md).
