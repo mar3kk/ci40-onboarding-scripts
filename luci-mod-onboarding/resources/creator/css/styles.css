@@ -29,8 +29,21 @@
     margin:15px;
 }
 
+.bootstrap-isolation .btn-creator.disabled {
+    border: 1px solid #727272;
+    color:#727272;
+}
+
 .bootstrap-isolation .btn-creator:hover {
     color: #72166b;
+    text-decoration: none;
+    cursor:pointer;
+}
+
+.bootstrap-isolation .btn-creator.disabled:hover {
+    color: #727272;
+    text-decoration: none;
+    cursor:not-allowed;
 }
 
 .bootstrap-isolation #onboarding-box {

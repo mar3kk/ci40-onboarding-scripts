@@ -4,7 +4,7 @@ module("luci.controller.creator.onboarding", package.seeall)
 local ubus = require "ubus"
 local ds = require("creator.ds")
 local onboarding = require("creator.onboarding")
-
+local creator_utils = require("creator.utils")
 local conn = ubus.connect();
 
 function index()
