@@ -14,7 +14,11 @@
     </div>
     <div class="row">
         <p class="text-center">
-            This Ci40 has not yet completed the onboarding process
+            <% if (isProvisioned) then %>
+                This Ci40 has completed the onboarding process but is not connected to Device Server
+            <% else %>
+                This Ci40 has not yet completed the onboarding process
+            <% end %>
         </p>
     </div>
     <div class="row">
