@@ -31,7 +31,7 @@ function idp_login()
     local url = "https://id.creatordev.io/oauth2/auth"
     local client_id = "2fcb0129-4354-4520-af54-8e3017b8e1f6"
     local scope = "core+openid+offline"
-    local redirectUri = "https://Ci40-mar3kk.local/cgi-bin/luci/admin/creator/onboarding/idp_login_completed"
+    local redirectUri = "https://OpenWrt.local/cgi-bin/luci/admin/creator/onboarding/idp_login_completed"
     local state = "dummy_state"
     local response_type = "id_token"
     local nonce = "ABCDEFGH"
