@@ -61,16 +61,18 @@ end
 function isBoardConnectedToDeviceServer()
     local config = getConfig()
     if (config == nil) then
-        error({code = 1, message = "Can't find config file under /etc/creator/provisioning.cfg. Do onboarding first."})
+        return false
     end
 
     local boardName = getBoardName()
     if (boardName == nil) then
-        error({code = 2, message = "Can't get board name. Do onboarding first."})
+        return false
     end
 
     local clients = creator_ds.getClients(config.url, config.key, config.secret)
-    
+    if clients == nil then
+        return false
+    end
     for i = 1, #clients do
         if (clients[i] == boardName) then
             return true

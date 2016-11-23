@@ -22,7 +22,7 @@
         <br />
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 text-center">
-                <input type="button" class="btn btn-default" value="Finish" onclick='startOnboarding($("#ds_url").val(), $("#key").val(), $("#secret").val(), $("#endPointName").val())' />
+                <input type="button" class="btn btn-creator" value="Finish" onclick='startOnboarding($("#ds_url").val(), $("#key").val(), $("#secret").val(), $("#endPointName").val())' />
             </div>
         <div>
 
@@ -35,9 +35,9 @@
 
 </div>
 <script>
-
+var i = 0;
 function startOnboarding(ds_url, key, secret, endPointName) {
-    showLoadingModal("Loading...")
+    showLoadingModal("Trying to connect to Device Server...")
     $.post('start_onboarding', {ds_url : ds_url, key : key, secret : secret, endPointName : endPointName}, function(data) {
 
     })
@@ -50,7 +50,6 @@ function startOnboarding(ds_url, key, secret, endPointName) {
         $(location).attr('href', '<%= luci.dispatcher.build_url("admin", "creator", "onboarding")%>')
     });
 }
-
 
 </script>
 <%+footer%>

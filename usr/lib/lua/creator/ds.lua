@@ -121,6 +121,9 @@ function getClients(ds_url, key, secret)
       return nil
     end
     local clients = jsonc.parse(creator_utils.fileToString(tmp))
+    if (clients.Items == nil) then
+        return nil
+    end
 
     local clientsArr = {}
 
