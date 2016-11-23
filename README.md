@@ -42,12 +42,12 @@ Alternatively you can compile it yourself.
 ## LuCI onboarding module
 This is a module for LuCI that allows you to complete the onboarding of your Ci40 board through a web page.
 The onboarding module is available on your Luci page under the "Creator" tab. Once you've
-connected you're Ci40 to the internet you can access it through `https://<CI40_IP>/cgi-bin/luci` where
-**CI40_IP** is ip of your Ci40 board in a local network. Follow the on-screen instructions to guide you through the process.
+connected you're Ci40 to the internet you can access it through `https://OpenWrt.local/cgi-bin/luci`.
+Follow the on-screen instructions to guide you through the process.
 
 ## Json RPC API
 This component exposes a couple of Json RPC methods through https. The API is accessible through
-`https://<CI40_IP>/cgi-bin/luci/rpc/creator_onboarding?auth=AUTH_TOKEN` endpoint.
+`https://OpenWrt.local/cgi-bin/luci/rpc/creator_onboarding?auth=AUTH_TOKEN` endpoint.
 Uhttpd daemon running on Ci40 uses self signed certificate. You may need to tell your client to
 accept such certificates. In curl this will be the `-k` parameter.
 
@@ -55,7 +55,7 @@ accept such certificates. In curl this will be the `-k` parameter.
 
 To call any method you need to be authenticated first. To authenticate yourself using JsonRPC call
 
-    http://<CI40_IP>/cgi-bin/luci/rpc/auth
+    http://OpenWrt.local/cgi-bin/luci/rpc/auth
 
 with following request body
 
@@ -242,6 +242,12 @@ Once onboarding process is completed this method can be used to generate new PSK
 	"pskSecret": "1988D523D88F480B15A98EBE27E1141CA41F30FD74E52C96ABC75AEC2AA49938"
 }
 ```
+
+## KNOWN ISSUES
+
+To be able to perform onboarding through LuCi interface two conditions must be met:
+* Ci40 hostname has to be set to "OpenWrt". It's default behaviour, if you didn't change it then it's fine.
+* Only single Ci40 board can be in your network
 
 ## CONTRIBUTING
 
