@@ -22,7 +22,19 @@
     box-shadow: none;
     font-weight: 500;
     border-radius: 4px;
-    color: #72166b;
+    text-transform: uppercase;
+    font-weight:bold;
+    font-size:12px;
+    margin:15px;
+}
+
+.bootstrap-isolation .btn-creator.disabled {
+    border: 1px solid #bbb;
+    background: #FFF;
+    color: #bbbbbb;
+    box-shadow: none;
+    font-weight: 500;
+    border-radius: 4px;
     text-transform: uppercase;
     font-weight:bold;
     font-size:12px;
@@ -31,6 +43,14 @@
 
 .bootstrap-isolation .btn-creator:hover {
     color: #72166b;
+    text-decoration: none;
+    cursor:pointer;
+}
+
+.bootstrap-isolation .btn-creator.disabled:hover {
+    color: #bbbbbb;
+    text-decoration: none;
+    
 }
 
 .bootstrap-isolation #onboarding-box {

@@ -30,13 +30,13 @@ local generate_method = {
         print("Starting PSK generation")
         local data = cerator_utils.loadJsonFromFile("/etc/creator/provisioning.cfg")
         if (data == nil) then
-          conn:reply(req, {error_msg = "Provisioning config not found!"});
+          conn:reply(req, {error = "Provisioning config not found!"});
           return
         end
 
         local ok, pskOrError = pcall(creator_ds.generatePsk, data.url, data.key, data.secret)
         if not ok then
-          conn:reply(req, {error_msg = err.msg})
+          conn:reply(req, {error = "Unable to retrieve PSK from Device Server"})
           return
         end
 
