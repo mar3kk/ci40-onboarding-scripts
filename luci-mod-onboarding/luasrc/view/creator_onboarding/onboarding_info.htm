@@ -26,6 +26,13 @@
             <a class="btn btn-creator" href='<%= luci.dispatcher.build_url("admin", "creator", "onboarding", "idp_login")%>'>Start OnBoarding process</a>
         </div>
     </div>
+    <div class="row">
+        <p class="text-center">
+            <% if (not isProvisioned) then %>
+                Onboarding your Ci40 will connect your device to your account on the Creator Device Server (the process allows you to create an account if you do not already have one). This is the first step towards setting up your IoT applications.
+            <% end %>
+        </p>
+    </div>
 </div>
 
 
