@@ -36,8 +36,7 @@ local generate_method = {
 
         local ok, pskOrError = pcall(creator_ds.generatePsk, data.url, data.key, data.secret)
         if not ok then
-          conn:reply(req, {error = "Unable to retrive PSK from Device Server"})
-          return
+          conn:reply(req, {error = "Unable to retrieve PSK from Device Server"})
         end
 
         conn:reply(req, {pskIdentity = pskOrError.Identity, pskSecret = pskOrError.Secret})
