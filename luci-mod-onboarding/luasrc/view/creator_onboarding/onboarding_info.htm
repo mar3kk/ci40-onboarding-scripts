@@ -1,0 +1,58 @@
+<%+header%>
+<%+creator_onboarding/creator_include%>
+<div class="bootstrap-isolation">
+
+<div id="onboarding-box">
+    <div id="onboarding-box-top">
+        <img src="/luci-static/resources/creator/gfx/ci40.jpg" width="160" />
+        <img src="/luci-static/resources/creator/gfx/animatedline_left.gif" />
+        <img src="/luci-static/resources/creator/gfx/exclamation.svg" />
+        <img src="/luci-static/resources/creator/gfx/animatedline_right.gif" />
+        <img src="/luci-static/resources/creator/gfx/device_server.svg" id="device-server-img"/>
+        <p class="red-alert" id="not-connected-alert">NOT CONNECTED!</p>
+        <p id="device-server">Device Server</p>
+    </div>
+    <div class="row">
+        <p class="text-center">
+            <% if (isProvisioned) then %>
+                This Ci40 has completed the onboarding process but is not connected to Device Server
+            <% else %>
+                This Ci40 has not yet completed the onboarding process
+            <% end %>
+        </p>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 text-center">
+            <a class="btn btn-creator" href='<%= luci.dispatcher.build_url("admin", "creator", "onboarding", "idp_login")%>'>Start OnBoarding process</a>
+        </div>
+    </div>
+    <div class="row">
+        <p class="text-center">
+            <% if (not isProvisioned) then %>
+                Onboarding your Ci40 will connect your device to your account on the Creator Device Server (the process allows you to create an account if you do not already have one). This is the first step towards setting up your IoT applications.
+            <% end %>
+        </p>
+    </div>
+</div>
+
+
+
+<%+creator_onboarding/alert_modal%>
+</div>
+<%+footer%>
+
+<script>
+
+function unprovision() {
+    $.post('<%= luci.dispatcher.build_url("admin", "creator", "onboarding", "unprovision")%>', function(data) {
+
+    })
+    .fail(function(jqXHR, textStatus, errorThrown) {
+        showErrorModal(errorThrown);
+    })
+    .done(function() {
+        location.reload();
+    });
+}
+
+</script>

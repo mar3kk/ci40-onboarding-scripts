@@ -1,0 +1,50 @@
+<%+header%>
+<%+creator_onboarding/creator_include%>
+<div class="bootstrap-isolation">
+
+
+
+    <div id="onboarding-box">
+        <div id="onboarding-box-top">
+            <img src="/luci-static/resources/creator/gfx/ci40.jpg" id="ci40-img" />
+            <img src="/luci-static/resources/creator/gfx/animatedline_left.gif" id="left-line-img" />
+            <img src="/luci-static/resources/creator/gfx/tick.svg" />
+            <img src="/luci-static/resources/creator/gfx/animatedline_right.gif" id="right-line-img"/>
+            <img src="/luci-static/resources/creator/gfx/device_server.svg" id="device-server-img"/>
+            <p class="green-alert" id="not-connected-alert">CONNECTED</p>
+            <p id="device-server">Device Server</p>
+        </div>
+        <div class="row">
+            <p class="text-center" style="padding-left:10px;padding-right:10px;">
+                Your Ci40 has successfully completed the onboarding process.
+                You should now be able to log into the <a href="https://console.creatordev.io" target="_blank">Developer Console</a> and find your Ci40 in the Devices section.
+                You can now move on to creating IoT applications by following the workshop examples on <a href="https://docs.creatordev.io" target="_blank">docs.creatordev.io</a>
+            </p>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <a class="btn btn-creator" onclick="unprovision();return;">Unprovision this Ci40</a>
+            </div>
+        </div>
+    </div>
+
+
+<%+creator_onboarding/alert_modal%>
+</div>
+<%+footer%>
+
+<script>
+
+function unprovision() {
+    $.post('<%= luci.dispatcher.build_url("admin", "creator", "onboarding", "unprovision")%>', function(data) {
+
+    })
+    .fail(function(jqXHR, textStatus, errorThrown) {
+        showErrorModal(errorThrown);
+    })
+    .done(function() {
+        location.reload();
+    });
+}
+
+</script>

@@ -1,0 +1,55 @@
+<%+header%>
+
+<%+creator_onboarding/creator_include%>
+<div class="bootstrap-isolation">
+
+
+<form method="post">
+    <div class="form-group">
+        <!-- <label for="key">Device server URL</label> -->
+        <input type="hidden" name="ds_url" id="ds_url" value="<%= ds_url %>" class="form-control"/>
+        <!-- <label for="key">Key</label> -->
+        <input type="hidden" class="form-control" name="key" id="key" value="<%= key %>">
+        <!-- <label for="secret">Secret</label> -->
+        <input type="hidden" name="secret" class="form-control" id="secret" value="<%= secret %>"/>
+
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+                <label for="endPointName">Please enter a name for your Ci40</label>
+                <input type="text" name="endPointName" class="form-control" id="endPointName"/>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 text-center">
+                <input type="button" class="btn btn-creator" value="Finish" onclick='startOnboarding($("#ds_url").val(), $("#key").val(), $("#secret").val(), $("#endPointName").val())' />
+            </div>
+        <div>
+
+    </div>
+</form>
+
+<%+creator_onboarding/alert_modal%>
+<%+creator_onboarding/loading_modal%>
+
+
+</div>
+<script>
+var i = 0;
+function startOnboarding(ds_url, key, secret, endPointName) {
+    showLoadingModal("Trying to connect to Device Server...")
+    $.post('start_onboarding', {ds_url : ds_url, key : key, secret : secret, endPointName : endPointName}, function(data) {
+
+    })
+    .fail(function(jqXHR, textStatus, errorThrown) {
+        hideLoadingModal();
+        showErrorModal(errorThrown);
+    })
+    .done(function() {
+        hideLoadingModal();
+        $(location).attr('href', '<%= luci.dispatcher.build_url("admin", "creator", "onboarding")%>')
+    });
+}
+
+</script>
+<%+footer%>
