@@ -86,9 +86,18 @@ end
 function getKeyAndSecret(account_server_url, id_token)
     local tmp = "data.tmp"
     local op = os.execute("curl -s '" .. account_server_url .. "' -H 'application/json' --data 'id_token=" .. id_token .. "' >" .. tmp)
+    if (op > 0) then
+        os.remove(tmp)
+        creator_utils.creatorError("Failed to reach account server. Check your internet connection.")
+    end
     local resp = creator_utils.loadJsonFromFile(tmp)
 
+    if (not resp) then
+        os.remove(tmp)
+        creator_utils.creatorError("Invalid response returned from account server.");
+    end
     os.remove(tmp)
+    
     return resp.Key, resp.Secret
 end
 

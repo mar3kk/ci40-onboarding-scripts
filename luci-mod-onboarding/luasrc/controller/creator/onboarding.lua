@@ -45,8 +45,12 @@ end
 
 function form()
     local token = luci.http.formvalue("token")
-    local key, secret = ds.getKeyAndSecret("https://developer-id.flowcloud.systems", token)
-    luci.template.render("creator_onboarding/onboarding_form", {key = key, secret = secret, ds_url = "https://deviceserver.creatordev.io"})
+    local ok, keyOrError, secret = pcall(ds.getKeyAndSecret, "https://developer-id.flowcloud.systems", token)
+    if (ok) then 
+        luci.template.render("creator_onboarding/onboarding_form", {key = keyOrError, secret = secret, ds_url = "https://deviceserver.creatordev.io"})
+    else 
+        luci.template.render("creator_onboarding/error", {message = keyOrError.msg})
+    end
 end
 
 -- Ajax functions --
@@ -96,12 +100,6 @@ function idp_login_completed()
     else
         luci.http.redirect(luci.dispatcher.build_url("admin", "creator", "onboarding", "form") .. "?token=" .. token)
     end
-end
-
-function idp_login_completed2()
-    local token = luci.http.formvalue("id_token")
-    local key, secret = ds.getKeyAndSecret("https://developer-id.flowcloud.systems", token)
-    luci.template.render("creator_onboarding/idp_login_completed", {key = key, secret = secret})
 end
 
 function is_board_connected_to_device_server()

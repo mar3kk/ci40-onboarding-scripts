@@ -1,0 +1,23 @@
+<%+header%>
+
+<%+creator_onboarding/creator_include%>
+<div class="bootstrap-isolation">
+<br />
+
+<div class="row">
+    <div class="col-lg-8 col-lg-offset-2">
+        <div class="alert alert-danger">
+            <%= message %>
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div class="row">
+    <div class="col-lg-8 col-lg-offset-2 text-center">
+        <a class="btn btn-creator" href='<%= luci.dispatcher.build_url("admin", "creator", "onboarding", "idp_login")%>'>Try again</a>
+    </div>
+</div>
+</div>
+<%+footer%>
