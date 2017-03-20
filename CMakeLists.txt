@@ -11,6 +11,5 @@ SET(CMAKE_BUILD_TYPE DEBUG)
 
 # Paths
 ########
-ADD_SUBDIRECTORY(etc)
 ADD_SUBDIRECTORY(usr)
 ADD_SUBDIRECTORY(luci-mod-onboarding)
